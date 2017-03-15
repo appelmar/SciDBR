@@ -140,19 +140,12 @@ scidbconnect = function(host=getOption("scidb.default_shim_host", "127.0.0.1"),
   attr(db, "connection")$port = port
   attr(db, "connection")$protocol = protocol
   attr(db, "connection")$int64 = int64
-
-# Update the scidb.version in the db connection environment
-  shim.version = SGET(db, "/version")
-  v = strsplit(gsub("[A-z\\-]", "", gsub("-.*", "", shim.version)), "\\.")[[1]]
-  if (length(v) < 2) v = c(v, "1")
-  attr(db, "connection")$scidb.version = sprintf("%s.%s", v[1], v[2])
-
-# set this to TRUE if connecting to an older SciDB version than 16.9
-  password_digest = ! at_least(attr(db, "connection")$scidb.version, "16.9")
-
+  
+  
+  
   if (missing(username)) username = c()
   if (missing(password)) password = c()
-# Check for login using either scidb or HTTP digest authentication
+  # Check for login using either scidb or HTTP digest authentication
   if (!is.null(username))
   {
     attr(db, "connection")$authtype = auth_type
@@ -170,6 +163,18 @@ scidbconnect = function(host=getOption("scidb.default_shim_host", "127.0.0.1"),
       attr(db, "connection")$digest = paste(username, password, sep=":")
     }
   }
+  
+
+# Update the scidb.version in the db connection environment
+  shim.version = SGET(db, "/version")
+  v = strsplit(gsub("[A-z\\-]", "", gsub("-.*", "", shim.version)), "\\.")[[1]]
+  if (length(v) < 2) v = c(v, "1")
+  attr(db, "connection")$scidb.version = sprintf("%s.%s", v[1], v[2])
+
+# set this to TRUE if connecting to an older SciDB version than 16.9
+  password_digest = ! at_least(attr(db, "connection")$scidb.version, "16.9")
+
+  
 
 
 # Use the query ID from a query as a unique ID for automated
